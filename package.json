@@ -1,0 +1,26 @@
+{
+  "name": "ssb-chess-mithril",
+  "version": "1.0.0",
+  "description": "An ssb-chess client",
+  "main": "inject.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://www.github.com/happy0/ssb-chess-mithril"
+  },
+  "author": "Gordon Martin",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "chessground": "^7.3.2",
+    "howler": "^2.0.15",
+    "mithril": "^1.1.6",
+    "mutant": "^3.19.0",
+    "patchcore": "^1.28.2",
+    "pubsub-js": "^1.7.0",
+    "ramda": "^0.25.0",
+    "ssb-chess": "3.0.0",
+    "ssb-embedded-chat": "^1.2.1"
+  }
+}
