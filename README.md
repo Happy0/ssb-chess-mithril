@@ -15,6 +15,8 @@ ssb-chess-mithril is currently integrated into [patchbay](https://www.github.com
 
 ## Integrating ssb-chess into a scuttlebutt application using depject
 
+Requires the [ssb-chess-db](https://www.github.com/happy0/ssb-chess-db) scuttlebot plugin to be installed.
+
 You can read more about depject [here](https://github.com/depject/depject)
 
 <TODO> The strategy for this was recently updated. I need to document the
