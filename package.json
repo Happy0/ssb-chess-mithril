@@ -1,6 +1,6 @@
 {
   "name": "ssb-chess-mithril",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "An ssb-chess client",
   "main": "inject.js",
   "scripts": {
@@ -20,7 +20,7 @@
     "patchcore": "^1.28.2",
     "pubsub-js": "^1.7.0",
     "ramda": "^0.25.0",
-    "ssb-chess": "3.0.0",
+    "ssb-chess": "3.0.1",
     "ssb-embedded-chat": "^1.2.1"
   }
 }
