@@ -50,7 +50,9 @@ module.exports = (currentGameObservable, gameCollectionObservable) => {
 
     function sortGamesByTimestamp(games, inAscendingOrder) {
         const comparer = (g1, g2) => inAscendingOrder ? (g1.lastUpdateTime - g2.lastUpdateTime) : (g2.lastUpdateTime - g1.lastUpdateTime);
-        return games.sort(comparer);
+        
+        // .concat to copy the array so that we don't change the observable's value.
+        return games.concat().sort(comparer);
     }
 
     function goToGame(gameId) {
