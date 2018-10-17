@@ -87,8 +87,8 @@ module.exports = (currentGameObservable, gamesAwaitingMoveObservable) => {
             var hasNext = next != null && next.gameId !== games.currentGame.gameId;
 
             return [
-                renderButton("Previous", hasPrevious ? previous.gameId : null, !hasPrevious),
-                renderButton("Next", hasNext ? next.gameId : null, !hasNext)
+                renderButton("<-", hasPrevious ? previous.gameId : null, !hasPrevious),
+                renderButton("->", hasNext ? next.gameId : null, !hasNext)
             ]
         }
     }
