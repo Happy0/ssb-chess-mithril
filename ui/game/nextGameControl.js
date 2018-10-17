@@ -24,7 +24,7 @@ module.exports = (currentGameObservable, gameCollectionObservable) => {
                 const sorted = sortGamesByTimestamp(gamesMyMove, isForward);
                 const idxCurrentGame = sorted.findIndex(game => game.gameId === currentGame.gameId);
 
-                const nextGame = gamesMyMove[idxCurrentGame + 1];
+                const nextGame = sorted[idxCurrentGame + 1];
 
                 if (idxCurrentGame === null || idxCurrentGame === undefined) {
                     return sorted[0];
