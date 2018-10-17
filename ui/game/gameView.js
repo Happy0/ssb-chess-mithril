@@ -68,12 +68,15 @@ module.exports = (gameCtrl, situationObservable, settings) => {
   }
 
   function renderBoard(gameId) {
-    const vDom = m('div', {
+    const chessDom = m('div', {
       class: 'cg-board-wrap ssb-chess-board-large',
       id: gameId,
     });
 
-    return vDom;
+    return m('div', { class: 'ssb-chess-board-area' }, [
+      chessDom,
+      m(nextPrevButtons)
+    ]);
   }
 
   function renderChat(gameId) {
@@ -251,13 +254,12 @@ module.exports = (gameCtrl, situationObservable, settings) => {
       return m('div', {
         class: 'ssb-chess-board-background-blue3 merida ssb-chess-game-layout',
       }, [renderChat(gameId), renderBoard(gameId),
-        m('div', { class: 'ssb-chess-history-area' }, [
-          m(pieceGraveOpponent),
-          m(gameHistory),
-          m(actionButtons),
-          m(pieceGraveMe),
-          m(nextPrevButtons)
-        ])]);
+      m('div', { class: 'ssb-chess-history-area' }, [
+        m(pieceGraveOpponent),
+        m(gameHistory),
+        m(actionButtons),
+        m(pieceGraveMe)
+      ])]);
     },
     oncreate(vNode) {
       const gameId = atob(vNode.attrs.gameId);
@@ -278,15 +280,15 @@ module.exports = (gameCtrl, situationObservable, settings) => {
 
       this.removeWatches = watchAll([situationObservable,
         gameHistory.getMoveSelectedObservable(), validMovesObservable],
-      (newSituation, moveSelected, validMoves) => {
-        const newConfig = situationToChessgroundConfig(newSituation, moveSelected, validMoves);
+        (newSituation, moveSelected, validMoves) => {
+          const newConfig = situationToChessgroundConfig(newSituation, moveSelected, validMoves);
 
-        if (settings.getPlaySounds()) {
-          playMoveSound(newSituation, newConfig, chessGround, moveSelected);
-        }
+          if (settings.getPlaySounds()) {
+            playMoveSound(newSituation, newConfig, chessGround, moveSelected);
+          }
 
-        chessGround.set(newConfig);
-      });
+          chessGround.set(newConfig);
+        });
 
       PubSub.publish('viewing_game', {
         gameId,

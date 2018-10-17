@@ -1,0 +1,14 @@
+.ssb-chess-next-previous-buttons-container {
+    display: flex;
+    margin: auto;
+    width: 200px;
+    padding-top: 10px;
+}
+
+.ssb-chess-next-previous-button {
+    margin: 5px;
+}
+
+.ssb-chess-next-previous-button-hidden {
+    visibility: hidden;
+}

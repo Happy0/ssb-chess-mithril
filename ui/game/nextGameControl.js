@@ -6,29 +6,34 @@ module.exports = (currentGameObservable, gamesAwaitingMoveObservable) => {
 
     const watchesToClear = [];
 
-    const buttonGames = computed([getPreviousGame(), getNextGame()], (next, previous) => {
+    const buttonGames = computed([getPreviousGame(), getNextGame(), currentGameObservable], (next, previous, current) => {
         return {
             nextGame: next,
-            previousGame: previous
+            previousGame: previous,
+            currentGame: current
         }
     });
 
     function getGameInDirection(isForward) {
         return computed([currentGameObservable, gamesAwaitingMoveObservable], (currentGame, gamesMyMove) => {
 
-            if (gamesMyMove.size <= 1) {
+            if (gamesMyMove.size === 0) {
                 return null;
-            } else {
+            }
+            else {
                 const sorted = sortGamesByTimestamp(gamesMyMove, isForward);
                 const idxCurrentGame = sorted.findIndex(game => game.gameId === currentGame.gameId);
 
                 const nextGame = gamesMyMove[idxCurrentGame + 1];
 
+                if (idxCurrentGame === null || idxCurrentGame === undefined) {
+                    return sorted[0];
+                }
                 if (nextGame) {
                     return nextGame;
                 } else {
                     // Circle round to the first game
-                    return gamesMyMove[0];
+                    return sorted[0];
                 }
             }
 
@@ -52,7 +57,7 @@ module.exports = (currentGameObservable, gamesAwaitingMoveObservable) => {
         const url = '/games/:gameId';
 
         m.route.set(url, {
-          gameId: btoa(gameId),
+            gameId: btoa(gameId),
         });
     }
 
@@ -60,7 +65,7 @@ module.exports = (currentGameObservable, gamesAwaitingMoveObservable) => {
         let classes = 'ssb-chess-next-previous-button';
 
         if (isHidden) {
-            classes += classes + ' ssb-chess-next-previous-button-hidden'
+            classes = classes + ' ssb-chess-next-previous-button-hidden'
         }
 
         return m('button', {
@@ -76,14 +81,14 @@ module.exports = (currentGameObservable, gamesAwaitingMoveObservable) => {
             return [];
         } else {
             var previous = games.previousGame;
-            var hasPrevious = previous != null;
+            var hasPrevious = previous != null && previous.gameId !== games.currentGame.gameId;
 
-            var next = games.previousGame;
-            var hasNext = next != null;
+            var next = games.nextGame;
+            var hasNext = next != null && next.gameId !== games.currentGame.gameId;
 
             return [
-                renderButton("Previous", hasPrevious ? previous.gameId : null, hasPrevious),
-                renderButton("Next", hasNext ? next.gameId : null, hasNext)
+                renderButton("Previous", hasPrevious ? previous.gameId : null, !hasPrevious),
+                renderButton("Next", hasNext ? next.gameId : null, !hasNext)
             ]
         }
     }
@@ -94,12 +99,12 @@ module.exports = (currentGameObservable, gamesAwaitingMoveObservable) => {
             watchesToClear.push(w);
         },
         view: () => {
-            return m('div', {className: 'ssb-chess-next-previous-buttons-container'},
+            return m('div', { className: 'ssb-chess-next-previous-buttons-container' },
                 renderButtons()
             );
         },
         onremove: () => {
-            watchesToClear.forEach( w => w() );
+            watchesToClear.forEach(w => w());
         }
     }
 }

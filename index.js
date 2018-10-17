@@ -33,6 +33,7 @@ module.exports = (attachToElement, sbot, opts = {}) => {
     './css/actionButtons.css',
     './css/activity.css',
     './css/pgnExport.css',
+    './css/nextPrevious.css'
   ];
 
   function setUpGamesIndex() {
