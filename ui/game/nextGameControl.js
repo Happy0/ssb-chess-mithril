@@ -2,7 +2,7 @@ const computed = require('mutant/computed');
 const m = require('mithril');
 const watch = require('mutant/watch');
 
-module.exports = (currentGameObservable, gamesAwaitingMoveObservable) => {
+module.exports = (currentGameObservable, gameCollectionObservable) => {
 
     const watchesToClear = [];
 
@@ -15,7 +15,7 @@ module.exports = (currentGameObservable, gamesAwaitingMoveObservable) => {
     });
 
     function getGameInDirection(isForward) {
-        return computed([currentGameObservable, gamesAwaitingMoveObservable], (currentGame, gamesMyMove) => {
+        return computed([currentGameObservable, gameCollectionObservable], (currentGame, gamesMyMove) => {
 
             if (gamesMyMove.size === 0) {
                 return null;
@@ -77,7 +77,7 @@ module.exports = (currentGameObservable, gamesAwaitingMoveObservable) => {
     function renderButtons() {
         var games = buttonGames();
 
-        if (!games || !games.currentGame.currentPlayerIsInGame()) {
+        if (!games) {
             return [];
         } else {
             var previous = games.previousGame;

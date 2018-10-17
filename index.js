@@ -91,11 +91,17 @@ module.exports = (attachToElement, sbot, opts = {}) => {
           const gameId = atob(args.gameId);
           const gameSituationObs = mainCtrl.getGameCtrl().getSituationObservable(gameId);
 
+          const observables = {
+            situationObservable: gameSituationObs,
+            gamesWhereMyMove: gamesMyMoveObs,
+            observableGames: observableGamesObs
+          }
+
           // Only load the game page once we have the initial game situation state.
           // The mithril router allows us to return a component in a promise.
           return new Promise((resolve) => {
             onceTrue(gameSituationObs, () => {
-              const gameComponent = GameComponent(mainCtrl, gameSituationObs, settingsCtrl);
+              const gameComponent = GameComponent(mainCtrl, observables, settingsCtrl);
               resolve(gameComponent);
             });
           });
