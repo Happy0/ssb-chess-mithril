@@ -27,10 +27,8 @@
 
 .ssb-embedded-chat-messages {
   width: 99%;
-  height: 585px;
+  height: 430px;
   border: 1px black solid;
-  padding-top: 5px;
-  padding-bottom: 5px;
 }
 
 .ssb-embedded-chat-message {
