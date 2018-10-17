@@ -12,6 +12,7 @@ const GameHistory = require('./gameHistory');
 const PromotionBox = require('./promote');
 
 const PieceGraveyard = require('./PieceGraveyard');
+const NextPreviousButtons = require('./nextGameControl');
 
 module.exports = (gameCtrl, situationObservable, settings) => {
   const myIdent = gameCtrl.getMyIdent();
@@ -35,6 +36,7 @@ module.exports = (gameCtrl, situationObservable, settings) => {
     myIdent,
     false,
   );
+
   const pieceGraveMe = PieceGraveyard(
     chessGroundObservable,
     situationObservable,
@@ -42,6 +44,8 @@ module.exports = (gameCtrl, situationObservable, settings) => {
     myIdent,
     true,
   );
+
+  const nextPrevButtons = NextPreviousButtons(situationObservable, gameCtrl.getGameCtrl().getGamesWhereMyMove());
 
   const rootDir = `${__dirname.replace('/ui/game', '')}/`;
 
@@ -252,6 +256,7 @@ module.exports = (gameCtrl, situationObservable, settings) => {
           m(gameHistory),
           m(actionButtons),
           m(pieceGraveMe),
+          m(nextPrevButtons)
         ])]);
     },
     oncreate(vNode) {
