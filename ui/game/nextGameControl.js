@@ -77,7 +77,7 @@ module.exports = (currentGameObservable, gamesAwaitingMoveObservable) => {
     function renderButtons() {
         var games = buttonGames();
 
-        if (!games) {
+        if (!games || !games.currentGame.currentPlayerIsInGame()) {
             return [];
         } else {
             var previous = games.previousGame;
