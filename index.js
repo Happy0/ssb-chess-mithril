@@ -15,8 +15,6 @@ const Notifier = require('./ui/notify/notifier');
 module.exports = (attachToElement, sbot, opts = {}) => {
   const { initialView } = opts;
 
-  setUpGamesIndex();
-
   const cssFiles = [
     './css/global.css',
     './css/chessground/assets/chessground.css',
@@ -35,18 +33,6 @@ module.exports = (attachToElement, sbot, opts = {}) => {
     './css/pgnExport.css',
     './css/nextPrevious.css'
   ];
-
-  function setUpGamesIndex() {
-    // In older versions of ssb-chess-db, the plugin was given 'ssbChessIndex'
-    // as a name. This caused issues when loading the plugin into a standalone
-    // scuttlebot ( https://github.com/Happy0/ssb-chess-db/issues/1 )
-    // We deal with this old name for backwards compatibility.
-    if (sbot['chess-db']) {
-      sbot.ssbChessIndex = sbot['chess-db'];
-    } else if (!sbot.ssbChessIndex && !sbot['chess-db']) {
-      throw new Error('Missing plugin ssb-chess-db');
-    }
-  }
 
   // h4cky0 strikes again? mebbe there's a better way? ;x
   function cssFilesToStyleTag(dom) {
