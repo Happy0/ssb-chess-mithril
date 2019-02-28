@@ -149,6 +149,7 @@ module.exports = (gameMoveCtrl, inviteCtrl, myIdent, situationObservable) => {
 
     var acceptInvite = (gameId) => {
       inviteCtrl.acceptChallenge(gameId);
+      goToGame(gameId);
     }
 
     if (rematchInfo.status === "invited" && rematchInfo.isMyInvite) {
