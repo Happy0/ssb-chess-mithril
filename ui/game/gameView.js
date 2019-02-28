@@ -26,6 +26,7 @@ const NextPreviousButtons = require('./nextGameControl');
     const gameHistory = GameHistory(situationObservable, myIdent);
     const actionButtons = ActionButtons(
       gameCtrl.getMoveCtrl(),
+      gameCtrl.getInviteCtrl(),
       myIdent,
       situationObservable,
     );
