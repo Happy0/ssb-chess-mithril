@@ -132,7 +132,7 @@ module.exports = (gameMoveCtrl, inviteCtrl, myIdent, situationObservable) => {
         return m('div');
       }
       else if (situation.rematches.length === 0) {
-        return m('button', {onclick: offerRematch}, "Offer rematch");
+        return m('button', { class: "ssb-game-action-button", onclick: offerRematch}, "Rematch");
       }
       else {
         return m('div', {}, situation.rematches.map(renderRematchState));
@@ -175,6 +175,7 @@ module.exports = (gameMoveCtrl, inviteCtrl, myIdent, situationObservable) => {
     return m('div', [
       m('button', {
         onclick: exportPgn,
+        class: "ssb-game-action-button",
         title: 'Export game.',
       }, 'Export game'),
       renderRematchInfo()

@@ -15,3 +15,8 @@
 .ssb-chess-resign-confirmation-button {
   margin: 2px;
 }
+
+.ssb-game-action-button {
+  width: 100%;
+  margin: 2px;
+}
