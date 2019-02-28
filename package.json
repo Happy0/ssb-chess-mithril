@@ -1,6 +1,6 @@
 {
   "name": "ssb-chess-mithril",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "An ssb-chess client",
   "main": "inject.js",
   "scripts": {
