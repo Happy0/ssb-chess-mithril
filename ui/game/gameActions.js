@@ -152,14 +152,14 @@ module.exports = (gameMoveCtrl, inviteCtrl, myIdent, situationObservable) => {
     }
 
     if (rematchInfo.status === "invited" && rematchInfo.isMyInvite) {
-      return m('div', "Awaiting invite being accepted");
+      return m('div', {class: "ssb-game-rematch-invite-text"}, "Awaiting rematch invite being accepted");
     } else if (rematchInfo.status === "invited" && !rematchInfo.isMyInvite) {
       return m('div', [ 
-        m('div', {}, 'Rematch?'), 
-        m('div', {onclick: () => acceptInvite(rematchInfo.gameId)}, 'Accept')
+        m('div', {class: "ssb-game-rematch-invite-text"}, 'Rematch?'), 
+        m('button', {class: "ssb-game-rematch-accept-button", onclick: () => acceptInvite(rematchInfo.gameId)}, 'Accept')
       ]);
     } else if (rematchInfo.status === "accepted") {
-      return m('button', {onclick: () => goToGame(rematchInfo.gameId)}, "Go to rematch");
+      return m('button', {class: "ssb-game-action-button", onclick: () => goToGame(rematchInfo.gameId)}, "Go to rematch");
     } else {
       return m('div');
     }

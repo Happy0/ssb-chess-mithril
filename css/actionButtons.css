@@ -20,3 +20,12 @@
   width: 100%;
   margin: 2px;
 }
+
+.ssb-game-rematch-invite-text {
+  text-align: center
+}
+
+.ssb-game-rematch-accept-button {
+  margin-left: auto;
+  margin-right: auto;
+}
