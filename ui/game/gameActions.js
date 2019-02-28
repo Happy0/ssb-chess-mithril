@@ -5,7 +5,7 @@ const when = require('mutant/when');
 const watch = require('mutant/watch');
 const computed = require('mutant/computed');
 
-module.exports = (gameMoveCtrl, myIdent, situationObservable) => {
+module.exports = (gameMoveCtrl, inviteCtrl, myIdent, situationObservable) => {
   let watchesToClear = [];
 
   let observing = true;
@@ -104,6 +104,67 @@ module.exports = (gameMoveCtrl, myIdent, situationObservable) => {
     });
   }
 
+  function renderRematchInfo() {
+
+    var offerRematch = function (event) {
+      
+      // We don't want the user being able to click the button twice
+      this.disabled = true;
+
+      onceTrue(situationObservable, situation => {
+        var gameId = situation.gameId;
+
+        var otherPlayer = situation.getOtherPlayer(myIdent);
+
+        if (!otherPlayer) {
+          throw new Error("Expected play to be participating in game when offering rematch.");
+        }
+
+        var myColour = situation.getWhitePlayer().id === myIdent ? "white" : "black";
+
+        inviteCtrl.inviteToPlay(otherPlayer.id, myColour, gameId);
+      })
+
+    }
+
+    return computed([situationObservable], situation => {
+      if (!situation.currentPlayerIsInGame()) {
+        return m('div');
+      }
+      else if (situation.rematches.length === 0) {
+        return m('button', {onclick: offerRematch}, "Offer rematch");
+      }
+      else {
+        return m('div', {}, situation.rematches.map(renderRematchState));
+      }
+
+    })();
+  }
+
+  function renderRematchState(rematchInfo) {
+    var goToGame = (gameId) => {
+      const gameRoute = `/games/${btoa(gameId)}`;
+      m.route.set(gameRoute);
+    }
+
+    var acceptInvite = (gameId) => {
+      inviteCtrl.acceptChallenge(gameId);
+    }
+
+    if (rematchInfo.status === "invited" && rematchInfo.isMyInvite) {
+      return m('div', "Awaiting invite being accepted");
+    } else if (rematchInfo.status === "invited" && !rematchInfo.isMyInvite) {
+      return m('div', [ 
+        m('div', {}, 'Rematch?'), 
+        m('div', {onclick: () => acceptInvite(rematchInfo.gameId)}, 'Accept')
+      ]);
+    } else if (rematchInfo.status === "accepted") {
+      return m('button', {onclick: () => goToGame(rematchInfo.gameId)}, "Go to rematch");
+    } else {
+      return m('div');
+    }
+  }
+
   function postGameButtons() {
     const exportPgn = () => {
       onceTrue(situationObservable, (situation) => {
@@ -111,10 +172,13 @@ module.exports = (gameMoveCtrl, myIdent, situationObservable) => {
       });
     };
 
-    return m('button', {
-      onclick: exportPgn,
-      title: 'Export game.',
-    }, 'Export game');
+    return m('div', [
+      m('button', {
+        onclick: exportPgn,
+        title: 'Export game.',
+      }, 'Export game'),
+      renderRematchInfo()
+    ])
   }
 
   function isObserving(situation) {
