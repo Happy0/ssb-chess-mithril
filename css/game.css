@@ -37,6 +37,10 @@
   margin-bottom: 2px;
 }
 
+.ssb-embedded-chat-message-old {
+  color: grey
+}
+
 .ssb-chess-graveyard {
   width: 200px;
   height: 50px;

@@ -224,6 +224,7 @@ const NextPreviousButtons = require('./nextGameControl');
         chatMessageType: 'chess_chat',
         chatMessageField: 'msg',
         chatboxEnabled: true,
+        previousChatId: situation.rematchFrom
       };
 
       if (situation.players[myIdent] != null) {
