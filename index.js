@@ -17,8 +17,8 @@ module.exports = (attachToElement, sbot, opts = {}) => {
 
   const cssFiles = [
     './css/global.css',
-    './css/chessground/assets/chessground.css',
-    './css/chessground/assets/theme.css',
+    './css/chessground-examples/assets/chessground.css',
+    './css/chessground-examples/assets/theme.css',
     './css/board-theme.css',
     './css/miniboards.css',
     './css/largeBoard.css',

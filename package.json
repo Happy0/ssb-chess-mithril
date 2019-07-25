@@ -1,6 +1,6 @@
 {
   "name": "ssb-chess-mithril",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "An ssb-chess client",
   "main": "inject.js",
   "scripts": {
@@ -13,7 +13,7 @@
   "author": "Gordon Martin",
   "license": "GPL-3.0",
   "dependencies": {
-    "chessground": "^7.3.2",
+    "chessground": "^7.6.8",
     "depject": "^4.1.1",
     "depnest": "^1.3.0",
     "howler": "^2.0.15",

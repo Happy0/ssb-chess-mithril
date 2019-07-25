@@ -30,7 +30,7 @@ module.exports = (chessBoardDomElement, colour, column, onChoice) => {
   }
 
   function renderPromotionOptionsOverlay() {
-    const c = document.getElementsByClassName('cg-board-wrap')[0];
+    const c = document.getElementsByClassName('cg-wrap')[0];
 
     const prom = document.createElement('div');
 

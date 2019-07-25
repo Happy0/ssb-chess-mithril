@@ -9,12 +9,12 @@
   justify-content: center;
 }
 
-.cg-board-wrap.ssb-chess-board-small {
+.cg-wrap.ssb-chess-board-small {
   width: 220px;
   height: 220px;
 }
 
-.cg-board-wrap.ssb-chess-board-medium {
+.cg-wrap.ssb-chess-board-medium {
   width: 320px;
   height: 320px;
 }

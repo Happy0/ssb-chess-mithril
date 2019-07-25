@@ -81,7 +81,7 @@ const NextPreviousButtons = require('./nextGameControl');
 
     function renderBoard(gameId) {
       const chessDom = m('div', {
-        class: 'cg-board-wrap ssb-chess-board-large',
+        class: 'cg-wrap ssb-chess-board-large',
         id: gameId,
       });
 
@@ -155,7 +155,7 @@ const NextPreviousButtons = require('./nextGameControl');
           events: {
             after: (orig, dest) => {
               if (isPromotionMove(chessGround, dest)) {
-                const chessboardDom = document.getElementsByClassName('cg-board-wrap')[0];
+                const chessboardDom = document.getElementsByClassName('cg-wrap')[0];
 
                 PromotionBox(chessboardDom, colourToPlay, dest[0],
                   (promotingToPiece) => {

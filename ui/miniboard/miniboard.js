@@ -52,7 +52,7 @@ module.exports = (gameSummaryObservable, summary, identPerspective, opts) => {
       class: 'ssb-chess-miniboard ssb-chess-board-background-blue3 merida',
     }, [
       m(`${'a[href=/games/'}${btoa(summary.gameId)}?observing=${observing}]`, {
-        class: `ssb-chessground-container cg-board-wrap ${boardSizeClass}`,
+        class: `ssb-chessground-container cg-wrap ${boardSizeClass}`,
         title: summary.gameId,
         id: summary.gameId,
         oncreate: m.route.link,
