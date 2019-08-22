@@ -30,7 +30,7 @@ module.exports = (chessBoardDomElement, colour, column, onChoice) => {
   }
 
   function renderPromotionOptionsOverlay() {
-    const c = document.getElementsByClassName('cg-wrap')[0];
+    const c = document.getElementsByClassName('ssb-chess-container')[0];
 
     const prom = document.createElement('div');
 
@@ -41,9 +41,11 @@ module.exports = (chessBoardDomElement, colour, column, onChoice) => {
 
     const box = PromotionBox(cb);
 
-    const left = colour === 'white' ? 75 * columnLetterToNumberFromZero(column) : ((75 * 7) - (75 * columnLetterToNumberFromZero(column)));
+    const left = document.getElementsByTagName("cg-board")[0].getBoundingClientRect().x + (2 * 75);
+    const top = document.getElementsByTagName("cg-board")[0].getBoundingClientRect().y + (3 * 75) + 35;
+
     const promotionBox = m('div', {
-      style: `z-index: 100; position: absolute; left: ${left}px; top: 0px;`,
+      style: `z-index: 1000; position: absolute; left: ${left}px; top: ${top}px;`,
     }, m(box));
 
     c.appendChild(prom);
