@@ -23,7 +23,7 @@
     "howler": "^2.0.15",
     "hyperscript": "^2.0.2",
     "lodash": "^4.17.11",
-    "mithril": "1.1.4",
+    "mithril": "1.1.7",
     "mutant": "3.29.0",
     "patchcore": "^1.28.2",
     "pubsub-js": "^1.7.0",
