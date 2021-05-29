@@ -64,8 +64,8 @@ module.exports = (attachToElement, sbot, opts = {}) => {
     // Hack: keep observables loaded with the latest value.
     gamesInProgressObs(e => e);
     gamesMyMoveObs(e => e);
-    observableGamesObs(t => t);
-    userRecentActivity(t => t);
+    observableGamesObs(e => e);
+    userRecentActivity(e => e);
 
     const defaultView = initialView || '/my_games';
 
