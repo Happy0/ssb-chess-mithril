@@ -8,7 +8,8 @@
     "test": "echo \"Error: no tests\"",
     "postinstall": "electron-builder install-app-deps",
     "release-notes": "node scripts/release-notes.js",
-    "dist": "electron-builder --publish=never"
+    "dist": "electron-builder --publish=never",
+    "release": "electron-builder"
   },
   "repository": {
     "type": "git",
