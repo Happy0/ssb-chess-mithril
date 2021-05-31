@@ -6,7 +6,7 @@ It is built to allow it to be integrated into scuttlebutt viewers (such as [patc
 
 ### Installation
 
-You can find a electron app using this library at [https://www.github.com/happy0/ssb-chess-electron](https://www.github.com/happy0/ssb-chess-electron).
+You can find a desktop app releases to run ssb-chess at [https://www.github.com/happy0/ssb-chess-electron](https://www.github.com/happy0/ssb-chess-electron).
 
 ### Libraries used
 * [ssb-chess](https://www.github.com/happy0/ssb-chess) is used for all the ssb-chess protocol logic (querying games, making moves, sending invites, etc)
