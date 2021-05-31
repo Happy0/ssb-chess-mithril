@@ -5,7 +5,8 @@ Correspondence chess built on top of the scuttlebutt platform. More information 
 It is built to allow it to be integrated into scuttlebutt viewers (such as [patchbay](https://www.github.com/ssbc/patchbay), [patchwork](https://www.github.com/ssbc/patchbay) using [depject](https://github.com/depject/depject) so that they can take care of things like discovering friends to play with, etc.
 
 ### Installation
-ssb-chess-mithril is currently integrated into [patchbay](https://www.github.com/ssbc/patchbay). You can find it in the menu at the top right (the blue dot) and then the 'chess' menu item.
+
+You can find a electron app using this library at [https://www.github.com/happy0/ssb-chess-electron](https://www.github.com/happy0/ssb-chess-electron).
 
 ### Libraries used
 * [ssb-chess](https://www.github.com/happy0/ssb-chess) is used for all the ssb-chess protocol logic (querying games, making moves, sending invites, etc)
