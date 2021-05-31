@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no tests\"",
-    "release-notes": "node scripts/release-notes.js",
+    "release-notes": "node scripts/release-notes.js"
   },
   "repository": {
     "type": "git",
