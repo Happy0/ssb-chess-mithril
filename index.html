@@ -9,7 +9,7 @@
 
   </nav>
 
-  <main id="ssb-main">
+  <main class="ssb-chess-container">
   </main>
 
 </body>
@@ -22,7 +22,7 @@
       if (err) {
         throw new Error(err);
       } else {
-        var attachToElement = document.getElementById("ssb-main");
+        var attachToElement = document.getElementsByClassName("ssb-chess-container")[0];
         require('./index.js')(attachToElement, sbot);
       }
 
