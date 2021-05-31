@@ -14,11 +14,6 @@ You can find a electron app using this library at [https://www.github.com/happy0
 * [Chessground](https://github.com/ornicar/chessground) is used for the board and pieces widget and animating the moves.
 * [Embedded Chat](https://github.com/happy0/ssb-embedded-chat) is used for the chatroom to allow the players to chat during their game.
 
-## Integrating ssb-chess into a scuttlebutt application using depject
+## Required ssb-server plugins
 
-Requires the [ssb-chess-db](https://www.github.com/happy0/ssb-chess-db) scuttlebot plugin to be installed.
-
-You can read more about depject [here](https://github.com/depject/depject)
-
-<TODO> The strategy for this was recently updated. I need to document the
-new approach :)
+SEe [https://github.com/Happy0/ssb-chess/blob/master/README.md#required-ssb-server-plugins](https://github.com/Happy0/ssb-chess/blob/master/README.md#required-ssb-server-plugins) for information about ssb-server plugins required to run this.
