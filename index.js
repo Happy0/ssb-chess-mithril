@@ -12,7 +12,7 @@ const RecentActivityComponent = require('./ui/recent_activity/recent');
 const PgnExportComponent = require('./ui/export/pgnExport');
 const Notifier = require('./ui/notify/notifier');
 
-module.exports = (attachToElement, sbot, opts = {}) => {
+module.exports = (attachToElement, dataAccess, opts = {}) => {
   const { initialView } = opts;
 
   const cssFiles = [
@@ -87,7 +87,7 @@ module.exports = (attachToElement, sbot, opts = {}) => {
           // The mithril router allows us to return a component in a promise.
           return new Promise((resolve) => {
             onceTrue(gameSituationObs, () => {
-              const gameComponent = GameComponent(mainCtrl, observables, settingsCtrl);
+              const gameComponent = GameComponent(dataAccess, mainCtrl, observables, settingsCtrl);
               resolve(gameComponent);
             });
           });
@@ -108,8 +108,8 @@ module.exports = (attachToElement, sbot, opts = {}) => {
     });
   }
 
-  sbot.whoami((err, ident) => {
-    const mainCtrl = MainCtrl(sbot, ident.id);
+  dataAccess.whoAmI((err, ident) => {
+    const mainCtrl = MainCtrl(dataAccess, ident.id);
 
     const settingsCtrl = mainCtrl.getSettingsCtrl();
 
@@ -129,7 +129,7 @@ module.exports = (attachToElement, sbot, opts = {}) => {
 
     // Display HTML5 notifications if the user is not viewing the chess app
     // and one of their games has an update.
-    const notifier = Notifier(mainCtrl, sbot);
+    const notifier = Notifier(mainCtrl);
     notifier.startNotifying();
 
     appRouter(bodyDiv, mainCtrl, settingsCtrl);
