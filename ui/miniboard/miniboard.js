@@ -1,6 +1,6 @@
 const m = require('mithril');
 const { Chessground } = require('chessground');
-const timeAgo = require('./timeAgo')();
+const timeAgo = require('./timeAgo');
 
 module.exports = (gameSummaryObservable, summary, identPerspective, opts) => {
   let chessground = null;

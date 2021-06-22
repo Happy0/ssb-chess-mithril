@@ -1,6 +1,6 @@
 {
   "name": "ssb-chess-mithril",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "An ssb-chess client",
   "main": "index.js",
   "scripts": {
@@ -18,11 +18,11 @@
     "depject": "^4.1.1",
     "depnest": "^1.3.0",
     "howler": "^2.0.15",
+    "human-time": "0.0.2",
     "hyperscript": "^2.0.2",
     "lodash": "^4.17.11",
     "mithril": "1.1.7",
     "mutant": "3.29.0",
-    "patchcore": "^1.28.2",
     "pubsub-js": "^1.7.0",
     "pull-scroll": "^1.0.9",
     "pull-stream": "^3.6.14",
