@@ -15,7 +15,9 @@ const PromotionBox = require('./promote');
 const PieceGraveyard = require('./PieceGraveyard');
 const NextPreviousButtons = require('./nextGameControl');
 
-  module.exports = (gameCtrl, observables, settings) => {
+const pull = require('pull-stream')
+
+  module.exports = (dataAccess, gameCtrl, observables, settings) => {
     const myIdent = gameCtrl.getMyIdent();
 
     const { situationObservable, gamesWhereMyMove, observableGames } = observables;
@@ -234,13 +236,17 @@ const NextPreviousButtons = require('./nextGameControl');
         config.isPublic = true;
       }
 
-      config.getDisplayName = (id, cb) => {
-        gameCtrl.getSocialCtrl().getDisplayName(id)
-          .then(name => cb(null, name))
-          .catch(err => cb(err, null));
-      };
+      config.publishPublic = dataAccess.publishPublicChessMessage.bind(dataAccess);
+      config.publishPrivate = dataAccess.publishPrivateChessMessage.bind(dataAccess);
 
-      const chat = EmbeddedChat(gameCtrl.getSbot(), config);
+      config.getChatStream = (gameId, live) => 
+        pull(dataAccess.allGameMessages(gameId, live), pull.filter(msg => !msg.sync && msg.value && msg.value.content.type == "chess_chat"));
+
+      config.aboutSelfChangeStream = (since) => dataAccess.aboutSelfChangesUserIds(since);
+
+      config.getDisplayName = (id, cb) => dataAccess.getPlayerDisplayName(id, cb);
+
+      const chat = EmbeddedChat(config);
 
       return chat;
     }
