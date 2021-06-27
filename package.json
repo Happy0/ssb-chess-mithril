@@ -1,6 +1,6 @@
 {
   "name": "ssb-chess-mithril",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "An ssb-chess client",
   "main": "index.js",
   "scripts": {
@@ -15,8 +15,6 @@
   "license": "GPL-3.0",
   "dependencies": {
     "chessground": "7.6.8",
-    "depject": "^4.1.1",
-    "depnest": "^1.3.0",
     "howler": "^2.0.15",
     "human-time": "0.0.2",
     "hyperscript": "^2.0.2",
