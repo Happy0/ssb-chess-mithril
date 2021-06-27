@@ -1,6 +1,6 @@
 {
   "name": "ssb-chess-mithril",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "An ssb-chess client",
   "main": "index.js",
   "scripts": {
@@ -26,7 +26,7 @@
     "pull-stream": "^3.6.14",
     "ramda": "^0.25.0",
     "ssb-chess": "4.0.1",
-    "ssb-embedded-chat": "2.0.0"
+    "ssb-embedded-chat": "2.0.1"
   },
   "devDependencies": {
     "electron-builder": "^22.10.5",
