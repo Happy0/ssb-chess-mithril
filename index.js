@@ -36,6 +36,7 @@ module.exports = (attachToElement, dataAccess, opts = {}) => {
 
   // h4cky0 strikes again? mebbe there's a better way? ;x
   function cssFilesToStyleTag(dom) {
+
     const rootDir = `${__dirname}/`;
 
     const styles = m('div', {}, cssFiles.map(file => m('link', { rel: 'stylesheet', href: rootDir + file })));
