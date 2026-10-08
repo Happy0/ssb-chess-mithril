@@ -2,6 +2,8 @@ const m = require('mithril');
 const SettingsDialog = require('../settings/settings-dialog');
 
 module.exports = (mainCtrl, settings) => {
+  m.route.prefix('?');
+
   const gamesInProgress = {
     name: 'Games',
     link: '/my_games',
