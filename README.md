@@ -2,7 +2,9 @@
 
 Correspondence chess built on top of the scuttlebutt platform. More information about scuttlebutt here: https://staltz.com/an-off-grid-social-network.html and [https://www.scuttlebutt.nz/](https://www.scuttlebutt.nz/)
 
-It is built to allow it to be integrated into scuttlebutt viewers (such as [patchbay](https://www.github.com/ssbc/patchbay), [patchwork](https://www.github.com/ssbc/patchbay) using [depject](https://github.com/depject/depject) so that they can take care of things like discovering friends to play with, etc.
+It is built to allow it to be integrated into scuttlebutt viewers (such as [patchbay](https://www.github.com/ssbc/patchbay), [patchwork](https://www.github.com/soapdog/patchwork) using [depject](https://github.com/depject/depject) so that they can take care of things like discovering friends to play with, etc.
+
+It is currently integrated into this fork of [patchwork](https://github.com/soapdog/patchwork/).
 
 ### Installation
 
