@@ -117,7 +117,11 @@ module.exports = (attachToElement, dataAccess, opts = {}) => {
 
     const settingsCtrl = mainCtrl.getSettingsCtrl();
 
-    const mainBody = attachToElement;
+    const mainBody = document.createElement('div');
+    mainBody.className = 'ssb-chess-container'
+
+    attachToElement.appendChild(mainBody);
+
     const navDiv = document.createElement('div');
     navDiv.id = 'ssb-nav';
     const bodyDiv = document.createElement('div');

@@ -8,9 +8,7 @@
 }
 
 .ssb-chess-container {
-  height: 100%;
-  width: 100%;
-  overflow: scroll;
+  font-size: 14px;
 }
 
 #ssb-chess-settings-dialog {
