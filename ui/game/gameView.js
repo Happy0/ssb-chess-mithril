@@ -7,328 +7,282 @@ const computed = require('mutant/computed');
 const when = require('mutant/when');
 const { Howl } = require('howler');
 
-const EmbeddedChat = require('ssb-embedded-chat');
 const ActionButtons = require('./gameActions');
 const GameHistory = require('./gameHistory');
 const PromotionBox = require('./promote');
+const ChatBox = require('./chat')
 
 const PieceGraveyard = require('./PieceGraveyard');
 const NextPreviousButtons = require('./nextGameControl');
 
-const pull = require('pull-stream')
+module.exports = (dataAccess, gameCtrl, observables, settings) => {
+  const myIdent = gameCtrl.getMyIdent();
 
-  module.exports = (dataAccess, gameCtrl, observables, settings) => {
-    const myIdent = gameCtrl.getMyIdent();
+  const { situationObservable, gamesWhereMyMove, observableGames } = observables;
 
-    const { situationObservable, gamesWhereMyMove, observableGames } = observables;
+  let chessGround = null;
+  const chessGroundObservable = Value();
 
-    let chessGround = null;
-    const chessGroundObservable = Value();
+  const gameHistory = GameHistory(situationObservable, myIdent);
+  const actionButtons = ActionButtons(
+    gameCtrl.getMoveCtrl(),
+    gameCtrl.getInviteCtrl(),
+    myIdent,
+    situationObservable,
+  );
 
-    const gameHistory = GameHistory(situationObservable, myIdent);
-    const actionButtons = ActionButtons(
-      gameCtrl.getMoveCtrl(),
-      gameCtrl.getInviteCtrl(),
-      myIdent,
-      situationObservable,
+  const gameHistoryObs = gameHistory.getMoveSelectedObservable();
+
+  const pieceGraveOpponent = PieceGraveyard(
+    chessGroundObservable,
+    situationObservable,
+    gameHistoryObs,
+    myIdent,
+    false,
+  );
+
+  const pieceGraveMe = PieceGraveyard(
+    chessGroundObservable,
+    situationObservable,
+    gameHistoryObs,
+    myIdent,
+    true,
+  );
+
+  const nextPrevButtons = NextPreviousButtons(situationObservable, arrowScrollsThroughGameCollection());
+
+  const rootDir = `${__dirname.replace('/ui/game', '')}/`;
+
+  const moveSound = new Howl({
+    src: [`${rootDir}assets/sounds/Move.mp3`],
+  });
+
+  const captureSound = new Howl({
+    src: [`${rootDir}assets/sounds/Capture.mp3`],
+  });
+
+  function arrowScrollsThroughGameCollection() {
+    const playerIsPlaying = computed([situationObservable], (situation) => situation.currentPlayerIsInGame());
+
+    return when(playerIsPlaying,
+      gamesWhereMyMove, observableGames
     );
+  }
 
-    const gameHistoryObs = gameHistory.getMoveSelectedObservable();
+  function plyToColourToPlay(ply) {
+    return ply % 2 === 0 ? 'white' : 'black';
+  }
 
-    const pieceGraveOpponent = PieceGraveyard(
-      chessGroundObservable,
-      situationObservable,
-      gameHistoryObs,
-      myIdent,
-      false,
-    );
+  function isPromotionMove(cg, dest) {
+    return (dest[1] === '8' || dest[1] === '1')
+      && cg.state.pieces[dest]
+      && (cg.state.pieces[dest].role === 'pawn');
+  }
 
-    const pieceGraveMe = PieceGraveyard(
-      chessGroundObservable,
-      situationObservable,
-      gameHistoryObs,
-      myIdent,
-      true,
-    );
-
-    const nextPrevButtons = NextPreviousButtons(situationObservable, arrowScrollsThroughGameCollection());
-
-    const rootDir = `${__dirname.replace('/ui/game', '')}/`;
-
-    const moveSound = new Howl({
-      src: [`${rootDir}assets/sounds/Move.mp3`],
+  function renderBoard(gameId) {
+    const chessDom = m('div', {
+      class: 'cg-wrap ssb-chess-board-large',
+      id: gameId,
     });
 
-    const captureSound = new Howl({
-      src: [`${rootDir}assets/sounds/Capture.mp3`],
-    });
+    return m('div', { class: 'ssb-chess-board-area' }, [
+      chessDom,
+      m(nextPrevButtons)
+    ]);
+  }
 
-    function arrowScrollsThroughGameCollection() {
-      const playerIsPlaying = computed([situationObservable], (situation) => situation.currentPlayerIsInGame());
+  function setNotMovable(conf) {
+    conf.movable = {};
+    conf.movable.color = null;
+  }
 
-      return when(playerIsPlaying,
-        gamesWhereMyMove, observableGames
-      );
+  function watchForMoveConfirmation(situation, onConfirm, validMoves) {
+    if (!settings.getMoveConfirmation()) {
+      // If move confirmation is not enabled, perform the move immediately
+      onConfirm();
+      return;
     }
 
-    function plyToColourToPlay(ply) {
-      return ply % 2 === 0 ? 'white' : 'black';
-    }
+    const confirmedObs = actionButtons.showMoveConfirmation();
+    m.redraw();
 
-    function isPromotionMove(cg, dest) {
-      return (dest[1] === '8' || dest[1] === '1')
-        && cg.state.pieces[dest]
-        && (cg.state.pieces[dest].role === 'pawn');
-    }
+    const watches = computed(
+      [confirmedObs, gameHistory.getMoveSelectedObservable()],
+      (confirmed, moveSelected) => ({
+        moveConfirmed: confirmed,
+        moveSelected,
+      }),
+    );
 
-    function renderBoard(gameId) {
-      const chessDom = m('div', {
-        class: 'cg-wrap ssb-chess-board-large',
-        id: gameId,
-      });
-
-      return m('div', { class: 'ssb-chess-board-area' }, [
-        chessDom,
-        m(nextPrevButtons)
-      ]);
-    }
-
-    function renderChat(gameId) {
-      return m('div', {
-        class: 'ssb-chess-chat',
-        id: `chat-${gameId}`,
-      });
-    }
-
-    function setNotMovable(conf) {
-      conf.movable = {};
-      conf.movable.color = null;
-    }
-
-    function watchForMoveConfirmation(situation, onConfirm, validMoves) {
-      if (!settings.getMoveConfirmation()) {
-        // If move confirmation is not enabled, perform the move immediately
+    const removeConfirmationListener = watches((value) => {
+      if (value.moveConfirmed.confirmed) {
         onConfirm();
-        return;
+      } else if (value.moveSelected !== 'live' || value.moveConfirmed.confirmed === false) {
+        const oldConfig = situationToChessgroundConfig(situation, 'live', validMoves);
+
+        if (value.moveSelected === 'live') {
+          chessGround.set(oldConfig);
+        }
       }
 
-      const confirmedObs = actionButtons.showMoveConfirmation();
-      m.redraw();
+      removeConfirmationListener();
+      actionButtons.hideMoveConfirmation();
+    });
+  }
 
-      const watches = computed(
-        [confirmedObs, gameHistory.getMoveSelectedObservable()],
-        (confirmed, moveSelected) => ({
-          moveConfirmed: confirmed,
-          moveSelected,
-        }),
-      );
+  function situationToChessgroundConfig(situation, moveSelected, validMoves) {
+    const playerColour = situation.players[myIdent] ? situation.players[myIdent].colour : 'white';
 
-      const removeConfirmationListener = watches((value) => {
-        if (value.moveConfirmed.confirmed) {
-          onConfirm();
-        } else if (value.moveSelected !== 'live' || value.moveConfirmed.confirmed === false) {
-          const oldConfig = situationToChessgroundConfig(situation, 'live', validMoves);
+    const colourToPlay = plyToColourToPlay(situation.ply);
 
-          if (value.moveSelected === 'live') {
-            chessGround.set(oldConfig);
-          }
-        }
+    const config = {
+      fen: situation.fen,
+      orientation: playerColour,
+      turnColor: colourToPlay,
+      ply: situation.ply,
+      check: situation.check,
+      movable: {
+        dests: validMoves,
+        free: false,
+        color: situation.toMove === myIdent ? playerColour : null,
+        events: {
+          after: (orig, dest) => {
+            if (isPromotionMove(chessGround, dest)) {
+              const chessboardDom = document.getElementsByClassName('cg-wrap')[0];
 
-        removeConfirmationListener();
-        actionButtons.hideMoveConfirmation();
-      });
-    }
-
-    function situationToChessgroundConfig(situation, moveSelected, validMoves) {
-      const playerColour = situation.players[myIdent] ? situation.players[myIdent].colour : 'white';
-
-      const colourToPlay = plyToColourToPlay(situation.ply);
-
-      const config = {
-        fen: situation.fen,
-        orientation: playerColour,
-        turnColor: colourToPlay,
-        ply: situation.ply,
-        check: situation.check,
-        movable: {
-          dests: validMoves,
-          free: false,
-          color: situation.toMove === myIdent ? playerColour : null,
-          events: {
-            after: (orig, dest) => {
-              if (isPromotionMove(chessGround, dest)) {
-                const chessboardDom = document.getElementsByClassName('cg-wrap')[0];
-
-                PromotionBox(chessboardDom, colourToPlay, dest[0],
-                  (promotingToPiece) => {
-                    const onConfirmMove = () => gameCtrl.getMoveCtrl().makeMove(
-                      situation.gameId,
-                      orig,
-                      dest,
-                      promotingToPiece,
-                    );
-                    watchForMoveConfirmation(situation, onConfirmMove);
-                  }).renderPromotionOptionsOverlay();
-              } else {
-                const onConfirmMove = () => {
-                  gameCtrl.getMoveCtrl().makeMove(situation.gameId, orig, dest);
-                };
-
-                watchForMoveConfirmation(situation, onConfirmMove, validMoves);
-              }
-
-              const notMovable = {
-                check: false,
-                movable: {
-                  color: null,
-                },
+              PromotionBox(chessboardDom, colourToPlay, dest[0],
+                (promotingToPiece) => {
+                  const onConfirmMove = () => gameCtrl.getMoveCtrl().makeMove(
+                    situation.gameId,
+                    orig,
+                    dest,
+                    promotingToPiece,
+                  );
+                  watchForMoveConfirmation(situation, onConfirmMove);
+                }).renderPromotionOptionsOverlay();
+            } else {
+              const onConfirmMove = () => {
+                gameCtrl.getMoveCtrl().makeMove(situation.gameId, orig, dest);
               };
 
-              chessGround.set(notMovable);
-            },
-          },
-        },
-      };
-
-      if (situation.lastMove) {
-        config.lastMove = [situation.lastMove.orig, situation.lastMove.dest];
-      }
-
-      if (moveSelected !== 'live') {
-        resetConfigToOlderPosition(situation, config, moveSelected);
-      }
-
-      return config;
-    }
-
-    function resetConfigToOlderPosition(newSituation, newConfig, moveNumber) {
-      setNotMovable(newConfig);
-      newConfig.fen = newSituation.fenHistory[moveNumber];
-
-      if (moveNumber > 0) {
-        newConfig.lastMove = [
-          newSituation.origDests[moveNumber - 1].orig,
-          newSituation.origDests[moveNumber - 1].dest,
-        ];
-      } else {
-        newConfig.lastMove = null;
-      }
-
-      const colourToPlay = plyToColourToPlay(moveNumber);
-      newConfig.turnColor = colourToPlay;
-
-      newConfig.check = newSituation.isCheckOnMoveNumber(moveNumber);
-    }
-
-    function makeEmbeddedChat(situation) {
-      const config = {
-        rootMessageId: situation.gameId,
-        chatMessageType: 'chess_chat',
-        chatMessageField: 'msg',
-        chatboxEnabled: true,
-        previousChatId: situation.rematchFrom
-      };
-
-      if (situation.players[myIdent] != null) {
-        config.isPublic = false;
-        config.participants = Object.keys(situation.players);
-      } else {
-        config.isPublic = true;
-      }
-
-      config.publishPublic = dataAccess.publishPublicChessMessage.bind(dataAccess);
-      config.publishPrivate = dataAccess.publishPrivateChessMessage.bind(dataAccess);
-
-      config.getChatStream = (gameId, live) => 
-        pull(dataAccess.allGameMessages(gameId, live), pull.filter(msg => !msg.sync && msg.value && msg.value.content.type == "chess_chat"));
-
-      config.aboutSelfChangeStream = (since) => dataAccess.aboutSelfChangesUserIds(since);
-
-      config.getDisplayName = (id, cb) => dataAccess.getPlayerDisplayName(id, cb);
-
-      const chat = EmbeddedChat(config);
-
-      return chat;
-    }
-
-    function playMoveSound(situation, newConfig, cg, moveSelected) {
-      if (newConfig.fen !== cg.state.fen && moveSelected !== 0) {
-        const pgnMove = moveSelected === 'live' ? situation.pgnMoves[
-          situation.pgnMoves.length - 1] : situation.pgnMoves[moveSelected - 1];
-
-        // Hacky way of determining if it's a capture move.
-        if (pgnMove.indexOf('x') !== -1) {
-          captureSound.play();
-        } else {
-          moveSound.play();
-        }
-      }
-    }
-
-    return {
-
-      view(ctrl) {
-        const gameId = atob(ctrl.attrs.gameId);
-
-        return m('div', {
-          class: 'ssb-chess-board-background-blue3 merida ssb-chess-game-layout',
-        }, [renderChat(gameId), renderBoard(gameId),
-        m('div', { class: 'ssb-chess-history-area' }, [
-          m(pieceGraveOpponent),
-          m(gameHistory),
-          m(actionButtons),
-          m(pieceGraveMe)
-        ])]);
-      },
-      oncreate(vNode) {
-        const gameId = atob(vNode.attrs.gameId);
-        const boardDom = document.getElementById(gameId);
-        const chatDom = document.getElementById(`chat-${gameId}`);
-
-        const originalSituation = situationObservable();
-
-        const config = situationToChessgroundConfig(originalSituation, 'live', {});
-        chessGround = Chessground(boardDom, config);
-        chessGroundObservable.set(chessGround);
-
-        this.embeddedChat = makeEmbeddedChat(originalSituation);
-        chatDom.appendChild(this.embeddedChat.getChatboxElement());
-
-        const validMovesObservable = gameCtrl.getMovesFinderCtrl()
-          .validMovesForSituationObs(situationObservable);
-
-        this.removeWatches = watchAll([situationObservable,
-          gameHistory.getMoveSelectedObservable(), validMovesObservable],
-          (newSituation, moveSelected, validMoves) => {
-            const newConfig = situationToChessgroundConfig(newSituation, moveSelected, validMoves);
-
-            if (settings.getPlaySounds()) {
-              playMoveSound(newSituation, newConfig, chessGround, moveSelected);
+              watchForMoveConfirmation(situation, onConfirmMove, validMoves);
             }
 
-            chessGround.set(newConfig);
-          });
+            const notMovable = {
+              check: false,
+              movable: {
+                color: null,
+              },
+            };
 
-        PubSub.publish('viewing_game', {
-          gameId,
-        });
-      },
-      onremove() {
-        if (this.removeWatches) {
-          this.removeWatches();
-        }
-
-        if (chessGround) {
-          // Yuck. This has been null for people at this stage before. Perhaps onremove
-          // can be called before oncreate in edge cases?
-          chessGround.destroy();
-        }
-
-        if (this.embeddedChat) {
-          this.embeddedChat.destroy();
-        }
-
-        PubSub.publish('exited_game');
+            chessGround.set(notMovable);
+          },
+        },
       },
     };
+
+    if (situation.lastMove) {
+      config.lastMove = [situation.lastMove.orig, situation.lastMove.dest];
+    }
+
+    if (moveSelected !== 'live') {
+      resetConfigToOlderPosition(situation, config, moveSelected);
+    }
+
+    return config;
+  }
+
+  function resetConfigToOlderPosition(newSituation, newConfig, moveNumber) {
+    setNotMovable(newConfig);
+    newConfig.fen = newSituation.fenHistory[moveNumber];
+
+    if (moveNumber > 0) {
+      newConfig.lastMove = [
+        newSituation.origDests[moveNumber - 1].orig,
+        newSituation.origDests[moveNumber - 1].dest,
+      ];
+    } else {
+      newConfig.lastMove = null;
+    }
+
+    const colourToPlay = plyToColourToPlay(moveNumber);
+    newConfig.turnColor = colourToPlay;
+
+    newConfig.check = newSituation.isCheckOnMoveNumber(moveNumber);
+  }
+
+  function playMoveSound(situation, newConfig, cg, moveSelected) {
+    if (newConfig.fen !== cg.state.fen && moveSelected !== 0) {
+      const pgnMove = moveSelected === 'live' ? situation.pgnMoves[
+        situation.pgnMoves.length - 1] : situation.pgnMoves[moveSelected - 1];
+
+      // Hacky way of determining if it's a capture move.
+      if (pgnMove.indexOf('x') !== -1) {
+        captureSound.play();
+      } else {
+        moveSound.play();
+      }
+    }
+  }
+
+  const Chat = ChatBox(myIdent, dataAccess, situationObservable);
+
+  return {
+
+    view(ctrl) {
+      const gameId = atob(ctrl.attrs.gameId);
+
+      return m('div', {
+        class: 'ssb-chess-board-background-blue3 merida ssb-chess-game-layout',
+      }, [m(Chat), renderBoard(gameId),
+      m('div', { class: 'ssb-chess-history-area' }, [
+        m(pieceGraveOpponent),
+        m(gameHistory),
+        m(actionButtons),
+        m(pieceGraveMe)
+      ])]);
+    },
+    oncreate(vNode) {
+      const gameId = atob(vNode.attrs.gameId);
+      const boardDom = document.getElementById(gameId);
+
+      const originalSituation = situationObservable();
+
+      const config = situationToChessgroundConfig(originalSituation, 'live', {});
+      chessGround = Chessground(boardDom, config);
+      chessGroundObservable.set(chessGround);
+
+      const validMovesObservable = gameCtrl.getMovesFinderCtrl()
+        .validMovesForSituationObs(situationObservable);
+
+      this.removeWatches = watchAll([situationObservable,
+        gameHistory.getMoveSelectedObservable(), validMovesObservable],
+        (newSituation, moveSelected, validMoves) => {
+          const newConfig = situationToChessgroundConfig(newSituation, moveSelected, validMoves);
+
+          if (settings.getPlaySounds()) {
+            playMoveSound(newSituation, newConfig, chessGround, moveSelected);
+          }
+
+          chessGround.set(newConfig);
+        });
+
+      PubSub.publish('viewing_game', {
+        gameId,
+      });
+    },
+    onremove() {
+      if (this.removeWatches) {
+        this.removeWatches();
+      }
+
+      if (chessGround) {
+        // Yuck. This has been null for people at this stage before. Perhaps onremove
+        // can be called before oncreate in edge cases?
+        chessGround.destroy();
+      }
+
+      PubSub.publish('exited_game');
+    },
   };
+};
