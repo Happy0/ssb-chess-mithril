@@ -2,7 +2,7 @@ const m = require('mithril');
 const SettingsDialog = require('../settings/settings-dialog');
 
 module.exports = (mainCtrl, settings) => {
-  m.route.prefix('?');
+  m.route.prefix = '?';
 
   const gamesInProgress = {
     name: 'Games',
@@ -45,8 +45,8 @@ module.exports = (mainCtrl, settings) => {
   function renderNavItem(navItem) {
     return m('span', {
       class: 'ssb-chess-nav-item',
-    }, m(`a[href=${navItem.link}]`, {
-      oncreate: m.route.link,
+    }, m(m.route.Link, {
+      href: navItem.link,
       title: navItem.countHoverText(),
     },
 

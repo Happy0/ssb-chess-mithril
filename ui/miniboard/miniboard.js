@@ -13,9 +13,10 @@ module.exports = (gameSummaryObservable, summary, identPerspective, opts) => {
     && summary.players[identPerspective].colour) ? summary.players[identPerspective].colour : 'white';
 
   function renderPlayerName(player) {
-    return m(`a[href=/player/${btoa(player.id)}]`, {
+    const link = `/player/${btoa(player.id)}`;
+    return m(m.route.Link, {
       class: 'ssb-chess-miniboard-name',
-      oncreate: m.route.link,
+      href: link,
     },
     player.name.substring(0, 10));
   }
@@ -48,14 +49,16 @@ module.exports = (gameSummaryObservable, summary, identPerspective, opts) => {
     const observing = Object.keys(summary.players).indexOf(identPerspective) === -1;
     const boardSizeClass = opts && opts.small ? 'ssb-chess-board-small' : 'ssb-chess-board-medium';
 
+    const link = `/games/${btoa(summary.gameId)}?observing=${observing}`;
+
     return m('div', {
       class: 'ssb-chess-miniboard ssb-chess-board-background-blue3 merida',
     }, [
-      m(`${'a[href=/games/'}${btoa(summary.gameId)}?observing=${observing}]`, {
+      m(m.route.Link, {
         class: `ssb-chessground-container cg-wrap ${boardSizeClass}`,
         title: summary.gameId,
         id: summary.gameId,
-        oncreate: m.route.link,
+        href: link,
       }), renderSummaryBottom(),
     ]);
   }

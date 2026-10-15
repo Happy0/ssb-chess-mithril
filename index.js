@@ -70,7 +70,7 @@ module.exports = (attachToElement, dataAccess, opts = {}) => {
 
     const defaultView = initialView || '/my_games';
 
-    m.route.prefix('?');
+    m.route.prefix = '?';
 
     m.route(mainBody, defaultView, {
       '/my_games': MiniboardListComponent(mainCtrl, gamesInProgressObs, mainCtrl.getMyIdent()),

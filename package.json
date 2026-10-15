@@ -18,7 +18,7 @@
     "howler": "^2.0.15",
     "human-time": "0.0.2",
     "hyperscript": "^2.0.2",
-    "mithril": "1.1.7",
+    "mithril": "2.3.6",
     "mutant": "3.29.0",
     "pubsub-js": "^1.7.0",
     "pull-scroll": "^1.0.9",

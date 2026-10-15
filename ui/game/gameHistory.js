@@ -7,7 +7,11 @@ const R = require('ramda');
 const UserLocationUtils = require('../viewer_perspective/user_location')();
 
 module.exports = (gameObservable) => {
-  let watchesToClear = [];
+  // TODO(hack): the router calls this function inside a 'onceTrue' which releases the observable once it exits the function body,
+  // at that point the observable would have no subscribers left and would have an initial value of null in the places it is used,
+  // so subscribing immediately stops that happening
+  const unwatch = gameObservable(e => e);
+  let watchesToClear = [unwatch];
 
   let moveNumberSelected = 'live';
   const moveSelectedObservable = Value(moveNumberSelected);
