@@ -1,5 +1,4 @@
 const m = require('mithril');
-const onceTrue = require('mutant/once-true');
 
 const MainCtrl = require('ssb-chess');
 
@@ -63,6 +62,8 @@ module.exports = (attachToElement, dataAccess, opts = {}) => {
     const userRecentActivity = mainCtrl.getRecentActivityCtrl().getRecentActivityForUserGames();
 
     // Hack: keep observables loaded with the latest value.
+    // TODO: these result in a memory leak if the DOM element is deleted and then reloaded - we should put them in a component
+    // so that they can be unsubscribed from onremove
     gamesInProgressObs(e => e);
     gamesMyMoveObs(e => e);
     observableGamesObs(e => e);
@@ -86,14 +87,7 @@ module.exports = (attachToElement, dataAccess, opts = {}) => {
             observableGames: observableGamesObs
           }
 
-          // Only load the game page once we have the initial game situation state.
-          // The mithril router allows us to return a component in a promise.
-          return new Promise((resolve) => {
-            onceTrue(gameSituationObs, () => {
-              const gameComponent = GameComponent(dataAccess, mainCtrl, observables, settingsCtrl);
-              resolve(gameComponent);
-            });
-          });
+          return GameComponent(dataAccess, mainCtrl, observables, settingsCtrl);
         },
       },
       '/invitations': InvitationsComponent(mainCtrl),

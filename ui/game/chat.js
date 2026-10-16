@@ -1,15 +1,15 @@
 
 const m = require('mithril')
 const EmbeddedChat = require('ssb-embedded-chat');
-const pull = require('pull-stream')
+const pull = require('pull-stream');
 
-module.exports = function ChatBox(myIdent, dataAccess, situationObservable) {
+module.exports = function ChatBox(myIdent, dataAccess, originalSituation) {
+
     return {
         view: () => {
             return m('div', {className: 'ssb-chess-chat'});
         },
         oncreate: function (vNode) {
-            const originalSituation = situationObservable();
             this.embeddedChat = makeEmbeddedChat(myIdent, dataAccess, originalSituation);
             vNode.dom.appendChild(this.embeddedChat.getChatboxElement());
         },

@@ -6,6 +6,7 @@ const watchAll = require('mutant/watch-all');
 const computed = require('mutant/computed');
 const when = require('mutant/when');
 const { Howl } = require('howler');
+const watch = require('mutant/watch');
 
 const ActionButtons = require('./gameActions');
 const GameHistory = require('./gameHistory');
@@ -15,10 +16,25 @@ const ChatBox = require('./chat')
 const PieceGraveyard = require('./PieceGraveyard');
 const NextPreviousButtons = require('./nextGameControl');
 
-module.exports = (dataAccess, gameCtrl, observables, settings) => {
-  const myIdent = gameCtrl.getMyIdent();
+function getInitialSituation(situationObservable) {
+  return new Promise((resolve, reject) => {
+      const w = watch(situationObservable, (situation) => {
+        if (situation) {
+          resolve(situation)
 
+          // hack: Keep the observable warm for a bit while components that subscribe to it initialise.
+          // If we remove it immediately then the data would have to be fetched again internally
+          setTimeout(w, 5000);
+        }
+      })
+  })
+
+}
+
+module.exports = async (dataAccess, gameCtrl, observables, settings) => {
+  const myIdent = gameCtrl.getMyIdent();
   const { situationObservable, gamesWhereMyMove, observableGames } = observables;
+  const originalSituation = await getInitialSituation(situationObservable);
 
   let chessGround = null;
   const chessGroundObservable = Value();
@@ -225,7 +241,7 @@ module.exports = (dataAccess, gameCtrl, observables, settings) => {
     }
   }
 
-  const Chat = ChatBox(myIdent, dataAccess, situationObservable);
+  const Chat = ChatBox(myIdent, dataAccess, originalSituation);
 
   return {
 
@@ -245,8 +261,6 @@ module.exports = (dataAccess, gameCtrl, observables, settings) => {
     oncreate(vNode) {
       const gameId = atob(vNode.attrs.gameId);
       const boardDom = document.getElementById(gameId);
-
-      const originalSituation = situationObservable();
 
       const config = situationToChessgroundConfig(originalSituation, 'live', {});
       chessGround = Chessground(boardDom, config);
