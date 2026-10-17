@@ -14,8 +14,13 @@ const Notifier = require('./ui/notify/notifier');
 module.exports = (attachToElement, dataAccess, opts = {}) => {
   const { initialView } = opts;
 
-  function cssFileElements() {
-     const cssFiles = [
+  // function cssFileElements() {
+  //   const styles = m('div', {}, cssPaths().map(file => m('link', { rel: 'stylesheet', href:  file })));
+  //   return styles
+  // }
+
+  function cssPaths() {
+    const cssFiles = [
       './css/global.css',
       './css/chessground-examples/assets/chessground.css',
       './css/chessground-examples/assets/theme.css',
@@ -35,11 +40,23 @@ module.exports = (attachToElement, dataAccess, opts = {}) => {
     ];
 
     const rootDir = `${__dirname}/`;
-    const styles = m('div', {}, cssFiles.map(file => m('link', { rel: 'stylesheet', href: rootDir + file })));
-    return styles
+    return cssFiles.map(file => rootDir + file)
+  }
+
+  function appendCss() {
+
+    cssPaths().forEach((filepath) => {
+      const link = document.createElement('link');
+
+      link.setAttribute('rel', 'stylesheet');
+      link.setAttribute('href', filepath);
+      document.head.appendChild(link);
+    })
   }
 
   async function appRouter(mountElement, mainCtrl, settingsCtrl) {
+    appendCss();
+
     const gamesInProgressObs = mainCtrl.getGameCtrl().getMyGamesInProgress();
     const gamesMyMoveObs = mainCtrl.getGameCtrl().getGamesWhereMyMove();
     const observableGamesObs = mainCtrl.getGameCtrl().getFriendsObservableGames();
@@ -103,7 +120,6 @@ module.exports = (attachToElement, dataAccess, opts = {}) => {
     return {
       view: function() {
         return m('div', {className: 'ssb-chess-container'}, [
-          cssFileElements(),
           m(navigationBarComponent),
           m('div', m(component))
       ])
