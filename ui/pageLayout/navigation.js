@@ -89,24 +89,28 @@ module.exports = (mainCtrl, settings) => {
   }
 
   function keepCountsUpdated() {
-    navItems.forEach((navItem) => {
+    const watches = navItems.map((navItem) => {
       if (navItem.countUpdateFn) {
-        navItem.countUpdateFn()((items) => {
+        return navItem.countUpdateFn()((items) => {
           const numItems = items.length;
           navItem.count = numItems;
           m.redraw();
         });
+      } else {
+        return () => {}
       }
     });
+
+    return watches;
   }
 
   return {
     view: () => renderNavigation(),
     oncreate: () => {
-      keepCountsUpdated();
+      this.watches = keepCountsUpdated();
     },
     onremove: () => {
-
+      this.watches.forEach(watch => watch());
     },
   };
 };

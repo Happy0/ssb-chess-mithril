@@ -22,8 +22,9 @@ function getInitialSituation(situationObservable) {
         if (situation) {
           resolve(situation)
 
-          // hack: Keep the observable warm for a bit while components that subscribe to it initialise.
-          // If we remove it immediately then the data would have to be fetched again internally
+          // hack: Keep the observable warm for a bit while components that subscribe to it initialise,
+          // in case we'd wastefully listen/unlisten to the data source internally when the listener 
+          // count is 0
           setTimeout(w, 5000);
         }
       })
@@ -31,7 +32,9 @@ function getInitialSituation(situationObservable) {
 
 }
 
-module.exports = async (dataAccess, gameCtrl, observables, settings) => {
+module.exports = async (gameId, dataAccess, gameCtrl, observables, settings) => {
+  console.log("hihi");
+
   const myIdent = gameCtrl.getMyIdent();
   const { situationObservable, gamesWhereMyMove, observableGames } = observables;
   const originalSituation = await getInitialSituation(situationObservable);
@@ -246,7 +249,6 @@ module.exports = async (dataAccess, gameCtrl, observables, settings) => {
   return {
 
     view(ctrl) {
-      const gameId = atob(ctrl.attrs.gameId);
 
       return m('div', {
         class: 'ssb-chess-board-background-blue3 merida ssb-chess-game-layout',
@@ -259,8 +261,10 @@ module.exports = async (dataAccess, gameCtrl, observables, settings) => {
       ])]);
     },
     oncreate(vNode) {
-      const gameId = atob(vNode.attrs.gameId);
       const boardDom = document.getElementById(gameId);
+
+      console.log("board dom")
+      console.log(boardDom)
 
       const config = situationToChessgroundConfig(originalSituation, 'live', {});
       chessGround = Chessground(boardDom, config);
@@ -286,6 +290,7 @@ module.exports = async (dataAccess, gameCtrl, observables, settings) => {
       });
     },
     onremove() {
+      console.log("Remove!")
       if (this.removeWatches) {
         this.removeWatches();
       }
