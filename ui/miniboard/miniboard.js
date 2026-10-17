@@ -1,5 +1,5 @@
 const m = require('mithril');
-const { Chessground } = require('chessground');
+const { Chessground } = require('@lichess-org/chessground');
 const timeAgo = require('./timeAgo');
 
 module.exports = (gameSummaryObservable, summary, identPerspective, opts) => {

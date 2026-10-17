@@ -103,9 +103,9 @@ module.exports = (attachToElement, dataAccess, opts = {}) => {
     return {
       view: function() {
         return m('div', {className: 'ssb-chess-container'}, [
-          m('div', cssFileElements()),
+          cssFileElements(),
           m(navigationBarComponent),
-          m(component)
+          m('div', m(component))
       ])
         
         

@@ -1,5 +1,5 @@
 const m = require('mithril');
-const { Chessground } = require('chessground');
+const { Chessground } = require('@lichess-org/chessground');
 const PubSub = require('pubsub-js');
 const Value = require('mutant/value');
 const watchAll = require('mutant/watch-all');
@@ -99,6 +99,7 @@ module.exports = async (gameId, dataAccess, gameCtrl, observables, settings) => 
   }
 
   function renderBoard(gameId) {
+    console.log("renderboard!")
     const chessDom = m('div', {
       class: 'cg-wrap ssb-chess-board-large',
       id: gameId,
@@ -268,6 +269,7 @@ module.exports = async (gameId, dataAccess, gameCtrl, observables, settings) => 
 
       const config = situationToChessgroundConfig(originalSituation, 'live', {});
       chessGround = Chessground(boardDom, config);
+
       chessGroundObservable.set(chessGround);
 
       const validMovesObservable = gameCtrl.getMovesFinderCtrl()
@@ -282,6 +284,8 @@ module.exports = async (gameId, dataAccess, gameCtrl, observables, settings) => 
             playMoveSound(newSituation, newConfig, chessGround, moveSelected);
           }
 
+          console.log("newconfig")
+          console.log(newConfig)
           chessGround.set(newConfig);
         });
 

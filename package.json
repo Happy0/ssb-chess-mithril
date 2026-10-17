@@ -14,7 +14,7 @@
   "author": "Gordon Martin",
   "license": "GPL-3.0",
   "dependencies": {
-    "chessground": "7.6.8",
+    "@lichess-org/chessground": "^10.4.2",
     "howler": "^2.0.15",
     "human-time": "0.0.2",
     "hyperscript": "^2.0.2",

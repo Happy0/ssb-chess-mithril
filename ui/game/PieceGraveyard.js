@@ -1,7 +1,7 @@
 const m = require('mithril');
 const watchAll = require('mutant/watch-all');
 
-const { opposite } = require('chessground/util');
+const { opposite } = require('@lichess-org/chessground/util');
 
 const R = require('ramda');
 

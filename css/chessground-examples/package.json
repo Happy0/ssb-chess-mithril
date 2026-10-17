@@ -1,25 +1,40 @@
 {
   "name": "chessground-examples",
-  "version": "6.0.1",
+  "version": "7.0.0",
+  "private": true,
   "description": "chessground examples",
-  "main": "dist/chessground-examples.js",
-  "author": "Thibault Duplessis",
   "license": "GPL-3.0",
+  "author": "Thibault Duplessis",
+  "main": "dist/chessground-examples.js",
+  "scripts": {
+    "build": "rollup --config",
+    "watch": "rollup --config --watch",
+    "serve": "http-server",
+    "format": "prettier --write .",
+    "check-format": "prettier --check ."
+  },
   "dependencies": {
-    "chess.js": "^0.10",
-    "chessground": "^7.6",
-    "page": "^1.7",
-    "snabbdom": "^0.7"
+    "@lichess-org/chessground": "file:~/chessground",
+    "chess.js": "^0.13.4",
+    "page": "^1",
+    "snabbdom": "3.5.1"
   },
   "devDependencies": {
-    "browserify": "^16",
-    "gulp": "^4",
-    "gulp-sourcemaps": "^2",
-    "gulp-uglify": "^3",
-    "tsify": "^3",
-    "typescript": "^3",
-    "vinyl-buffer": "^1",
-    "vinyl-source-stream": "^2",
-    "watchify": "^3"
-  }
+    "@rollup/plugin-commonjs": "^19",
+    "@rollup/plugin-node-resolve": "^13",
+    "@rollup/plugin-typescript": "^8",
+    "@types/chess.js": "^0.13.2",
+    "@types/page": "^1.11.5",
+    "http-server": "^14.1",
+    "prettier": "^3",
+    "rollup": "^3",
+    "tslib": "^2",
+    "typescript": "^6"
+  },
+  "engines": {
+    "node": ">=24",
+    "pnpm": ">=12"
+  },
+  "packageManager": "pnpm@12.3.4",
+  "//": "for local testing, use @lichess-org/chessground: file:~/chessground"
 }
