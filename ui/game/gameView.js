@@ -95,8 +95,8 @@ module.exports = async (gameId, dataAccess, gameCtrl, observables, settings) => 
 
   function isPromotionMove(cg, dest) {
     return (dest[1] === '8' || dest[1] === '1')
-      && cg.state.pieces[dest]
-      && (cg.state.pieces[dest].role === 'pawn');
+      && cg.state.pieces.get(dest)
+      && (cg.state.pieces.get(dest).role === 'pawn');
   }
 
   function renderBoard(gameId) {
