@@ -65,7 +65,7 @@ module.exports = (attachToElement, dataAccess, opts = {}) => {
     // Hack: keep observables loaded with the latest value.
     const watches = [
       gamesInProgressObs(e => e),
-      gamesMyMoveObs(),
+      gamesMyMoveObs(e => e),
       observableGamesObs(e => e),
       userRecentActivity(e => e)
      ];
@@ -151,7 +151,7 @@ module.exports = (attachToElement, dataAccess, opts = {}) => {
     },
     destroy: () => {
       // unmount the app
-      m.route(attachToElement, null);
+      m.mount(attachToElement, null);
       globalWatches.then((watches) => watches.forEach(w => w()))
     }
   };
