@@ -22,10 +22,11 @@ function getInitialSituation(situationObservable) {
         if (situation) {
           resolve(situation)
 
-          // hack: Keep the observable warm for a bit while components that subscribe to it initialise,
-          // in case we'd wastefully listen/unlisten to the data source internally when the listener 
-          // count is 0
-          setTimeout(w, 5000);
+          // hack: Keep the observable warm - the ssb-chess 'getSituationObservable' doesn't handle
+          // the observable having 0 listeners then 1 again - it aborts the underyling stream when it
+          // reaches 0 listeners but doesn't start it again if it reaches >= 1 again.
+          // TODO: fix this properly
+          setTimeout(w, 50000);
         }
       })
   })
@@ -151,11 +152,14 @@ module.exports = async (gameId, dataAccess, gameCtrl, observables, settings) => 
   }
 
   function situationToChessgroundConfig(situation, moveSelected, validMoves) {
+    const ended = ["mate", "draw", "resigned"].indexOf(situation.status.status) !== -1;
+
     const playerColour = situation.players[myIdent] ? situation.players[myIdent].colour : 'white';
 
     const colourToPlay = plyToColourToPlay(situation.ply);
 
     const config = {
+      viewOnly: ended,
       fen: situation.fen,
       orientation: playerColour,
       turnColor: colourToPlay,

@@ -65,7 +65,7 @@ module.exports = (attachToElement, dataAccess, opts = {}) => {
     // Hack: keep observables loaded with the latest value.
     const watches = [
       gamesInProgressObs(e => e),
-      gamesMyMoveObs(e => e),
+      gamesMyMoveObs(),
       observableGamesObs(e => e),
       userRecentActivity(e => e)
      ];
