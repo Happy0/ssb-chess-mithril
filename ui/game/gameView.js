@@ -34,7 +34,6 @@ function getInitialSituation(situationObservable) {
 }
 
 module.exports = async (gameId, dataAccess, gameCtrl, observables, settings) => {
-  console.log("hihi");
 
   const myIdent = gameCtrl.getMyIdent();
   const { situationObservable, gamesWhereMyMove, observableGames } = observables;
@@ -100,7 +99,6 @@ module.exports = async (gameId, dataAccess, gameCtrl, observables, settings) => 
   }
 
   function renderBoard(gameId) {
-    console.log("renderboard!")
     const chessDom = m('div', {
       class: 'cg-wrap ssb-chess-board-large',
       id: gameId,
@@ -268,9 +266,6 @@ module.exports = async (gameId, dataAccess, gameCtrl, observables, settings) => 
     oncreate(vNode) {
       const boardDom = document.getElementById(gameId);
 
-      console.log("board dom")
-      console.log(boardDom)
-
       const config = situationToChessgroundConfig(originalSituation, 'live', {});
       chessGround = Chessground(boardDom, config);
 
@@ -288,8 +283,6 @@ module.exports = async (gameId, dataAccess, gameCtrl, observables, settings) => 
             playMoveSound(newSituation, newConfig, chessGround, moveSelected);
           }
 
-          console.log("newconfig")
-          console.log(newConfig)
           chessGround.set(newConfig);
         });
 
@@ -298,7 +291,6 @@ module.exports = async (gameId, dataAccess, gameCtrl, observables, settings) => 
       });
     },
     onremove() {
-      console.log("Remove!")
       if (this.removeWatches) {
         this.removeWatches();
       }

@@ -31,7 +31,6 @@ export const lastMoveDrop: Unit = {
     function run() {
       if (!cg.state.dom.elements.board.offsetParent) return;
       const config = configs[++it % configs.length];
-      console.log(config);
       cg.set(config());
       setTimeout(run, delay);
     }
