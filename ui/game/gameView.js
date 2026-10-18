@@ -162,7 +162,7 @@ module.exports = async (gameId, dataAccess, gameCtrl, observables, settings) => 
       ply: situation.ply,
       check: situation.check,
       movable: {
-        dests: validMoves,
+        dests: new Map(Object.entries(validMoves)),
         free: false,
         color: situation.toMove === myIdent ? playerColour : null,
         events: {

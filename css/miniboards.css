@@ -33,6 +33,7 @@
 .ssb-chess-miniboard-controls {
   display: flex;
   justify-content: center;
+  position: relative;
 }
 
 .ssb-chess-miniboard-control {
