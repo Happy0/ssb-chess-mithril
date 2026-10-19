@@ -1,8 +1,10 @@
 const m = require('mithril');
 const SettingsDialog = require('../settings/settings-dialog');
 
-module.exports = (mainCtrl, settings) => {
+module.exports = (mainCtrl, settings, globalObservables) => {
   m.route.prefix = '?';
+
+  const { gamesWhereMyMove, friendsObservableGames, pendingChallengesReceived, unseenNotifications } = globalObservables;
 
   const gamesInProgress = {
     name: 'Games',
@@ -14,21 +16,21 @@ module.exports = (mainCtrl, settings) => {
     name: 'My Move',
     link: '/games_my_move',
     count: 0,
-    countUpdateFn: mainCtrl.getGameCtrl().getGamesWhereMyMove,
+    countUpdateFn: () => gamesWhereMyMove,
     countHoverText: () => `${gamesMyMove.count} games awaiting your move.`,
   };
   const invitations = {
     name: 'Invitations',
     link: '/invitations',
     count: 0,
-    countUpdateFn: mainCtrl.getInviteCtrl().pendingChallengesReceived,
+    countUpdateFn: () => pendingChallengesReceived,
     countHoverText: () => `${invitations.count} pending invitations received.`,
   };
   const observable = {
     name: 'Observe',
     link: '/observable',
     count: 0,
-    countUpdateFn: mainCtrl.getGameCtrl().getFriendsObservableGames,
+    countUpdateFn: () => friendsObservableGames,
     countOnHoverOnly: true,
     countHoverText: () => `${observable.count} observable games.`,
   };
@@ -36,7 +38,7 @@ module.exports = (mainCtrl, settings) => {
     name: 'Recent Activity',
     link: '/activity',
     count: 0,
-    countUpdateFn: mainCtrl.getRecentActivityCtrl().unseenNotifications,
+    countUpdateFn: () => unseenNotifications,
     countHoverText: () => 'Recent Activity',
   };
 

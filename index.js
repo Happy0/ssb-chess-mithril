@@ -61,6 +61,8 @@ module.exports = (attachToElement, dataAccess, opts = {}) => {
     const gamesMyMoveObs = mainCtrl.getGameCtrl().getGamesWhereMyMove();
     const observableGamesObs = mainCtrl.getGameCtrl().getFriendsObservableGames();
     const userRecentActivity = mainCtrl.getRecentActivityCtrl().getRecentActivityForUserGames();
+    const pendingChallengesReceived = mainCtrl.getInviteCtrl().pendingChallengesReceived()
+    const unseenNotifications = mainCtrl.getRecentActivityCtrl().unseenNotifications()
 
     // Hack: keep observables loaded with the latest value.
     const watches = [
@@ -74,7 +76,12 @@ module.exports = (attachToElement, dataAccess, opts = {}) => {
 
     m.route.prefix = '?';
 
-    const navigationBar = NavigationBar(mainCtrl, settingsCtrl)
+    const navigationBar = NavigationBar(mainCtrl, settingsCtrl, {
+      gamesWhereMyMove: gamesMyMoveObs,
+      friendsObservableGames: observableGamesObs,
+      pendingChallengesReceived: pendingChallengesReceived,
+      unseenNotifications: unseenNotifications
+    })
 
     m.route(mountElement, defaultView, {
       '/my_games': layoutTemplate(navigationBar, MiniboardListComponent(mainCtrl, gamesInProgressObs, mainCtrl.getMyIdent())),
