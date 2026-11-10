@@ -9,9 +9,9 @@ const PlayerProfileComponent = require('./ui/player/player_profile');
 const InvitationsComponent = require('./ui/invitations/invitations');
 const RecentActivityComponent = require('./ui/recent_activity/recent');
 const PgnExportComponent = require('./ui/export/pgnExport');
-const Notifier = require('./ui/notify/notifier');
+const Notifications = require('./ui/notify/notifications');
 
-module.exports = (attachToElement, dataAccess, opts = {}) => {
+function mountComponent (attachToElement, mainCtrl, dataAccess, opts = {}) {
   const { initialView } = opts;
 
   // function cssFileElements() {
@@ -137,19 +137,8 @@ module.exports = (attachToElement, dataAccess, opts = {}) => {
 
   }
 
-  const whoAmIAsync = util.promisify(dataAccess.whoAmI.bind(dataAccess))
-
-  const globalWatches = whoAmIAsync().then((ident) => {
-    const mainCtrl = MainCtrl(dataAccess, ident.id);
-    const settingsCtrl = mainCtrl.getSettingsCtrl();
-
-    // Display HTML5 notifications if the user is not viewing the chess app
-    // and one of their games has an update.
-    const notifier = Notifier(mainCtrl);
-    notifier.startNotifying();
-
-    return appRouter(attachToElement, mainCtrl, settingsCtrl);
-  })
+  const settingsCtrl = mainCtrl.getSettingsCtrl();
+  const globalWatches = appRouter(attachToElement, mainCtrl, settingsCtrl);
 
   return {
     goToGame: (gameId) => {
@@ -159,10 +148,19 @@ module.exports = (attachToElement, dataAccess, opts = {}) => {
     destroy: () => {
       // unmount the app
       m.mount(attachToElement, null);
-      globalWatches.then((watches) => watches.forEach(w => w()))
+      globalWatches.forEach(w => w());
     }
   };
 };
 
+module.exports = async (dataAccess) => {
+  const whoAmIAsync = util.promisify(dataAccess.whoAmI.bind(dataAccess))
+  const ident = await whoAmIAsync();
 
+  const mainCtrl = MainCtrl(dataAccess, ident.id);
 
+  return {
+    mount: (attachToElement, opts) => mountComponent(attachToElement, mainCtrl, dataAccess, opts),
+    notifications: Notifications(mainCtrl)
+  }
+}

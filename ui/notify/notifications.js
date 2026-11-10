@@ -12,7 +12,7 @@ module.exports = (mainCtrl) => {
     return situation.players[msg.value.author] ? situation.players[msg.value.author].name : '';
   }
 
-  function notifyIfRelevant(gameMsg) {
+  function mapNotification(gameMsg, cb) {
     if (!userLocationUtils.chessAppIsVisible()) {
       const gameId = gameMsg.value.content.type === 'chess_invite' ? gameMsg.key : gameMsg.value.content.root;
 
@@ -24,26 +24,44 @@ module.exports = (mainCtrl) => {
 
       onceTrue(situation, (gameSituation) => {
         const opponentName = getOpponentName(gameSituation, gameMsg);
-        let notification;
+        let notificationDetails = null;
 
         if (gameMsg.value.content && gameMsg.value.content.type === 'chess_invite' && gameMsg.value.author != me) {
-          notification = `${opponentName} has invited you to a game`;
-          notify.showNotification(notification);
+          notificationDetails = {
+            type: 'inite',
+            from: gameMsg.value.author,
+            message: `${opponentName} has invited you to a game`,
+            gameId: gameId
+          }
         } else if (gameMsg.value.content.type === 'chess_move' && gameMsg.value.author != me) {
-          notification = `It's your move in your game against ${opponentName}`;
-          notify.showNotification(notification);
+          notificationDetails = {
+            type: 'your_move',
+            from: gameMsg.value.author,
+            message: `It's your move in your game against ${opponentName}`,
+            gameId: gameId
+          }
         } else if (gameMsg.value.content.type === 'chess_game_end' && gameMsg.value.author != me) {
-          notification = `Your game with ${opponentName} ended`;
-          notify.showNotification(notification);
+          notificationDetails = {
+            type: 'game_end',
+            from: gameMsg.value.author,
+            message: `Your game with ${opponentName} ended`,
+            gameId: gameId
+          }
         } else if (gameMsg.value.content.type === 'chess_invite_accept' && gameMsg.value.author != me) {
-          notification = `${opponentName} has accepted your game invite`;
-          notify.showNotification(notification);
+          notificationDetails = {
+            type: 'invite_accepted',
+            from: gameMsg.value.author,
+            message: `${opponentName} has accepted your game invite`,
+            gameId: gameId
+          }
         }
+
+        cb(null, notificationDetails);
       });
     }
   }
 
-  function startNotifying() {
+  function getNotificationStream() {
     const opts = {
       live: true,
       since: Date.now(),
@@ -54,10 +72,13 @@ module.exports = (mainCtrl) => {
       opts,
     );
 
-    pull(gameUpdateStream, pull.drain(msg => notifyIfRelevant(msg)));
+    pull(gameUpdateStream, pull.asyncMap(mapNotification), pull.filter(x => x != null));
   }
 
   return {
-    startNotifying,
+    getNotificationStream: getNotificationStream,
+    notify: (notificationDetails) => {
+      notify.showNotification(notificationDetails.message);
+    }
   };
 };
