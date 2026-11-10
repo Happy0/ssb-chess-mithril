@@ -166,7 +166,7 @@ module.exports = async (gameId, dataAccess, gameCtrl, observables, settings) => 
       movable: {
         dests: new Map(Object.entries(validMoves)),
         free: false,
-        color: situation.toMove === myIdent ? playerColour : null,
+        color: situation.status.status === 'started' && situation.toMove === myIdent ? playerColour : null,
         events: {
           after: (orig, dest) => {
             if (isPromotionMove(chessGround, dest)) {
