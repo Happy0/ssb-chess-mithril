@@ -72,7 +72,7 @@ module.exports = (mainCtrl) => {
       opts,
     );
 
-    pull(gameUpdateStream, pull.asyncMap(mapNotification), pull.filter(x => x != null));
+    return pull(gameUpdateStream, pull.asyncMap(mapNotification), pull.filter(x => x != null));
   }
 
   return {
