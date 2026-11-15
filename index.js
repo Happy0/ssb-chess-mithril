@@ -54,7 +54,7 @@ function mountComponent (attachToElement, mainCtrl, dataAccess, opts = {}) {
     })
   }
 
-  async function appRouter(mountElement, mainCtrl, settingsCtrl) {
+  function appRouter(mountElement, mainCtrl, settingsCtrl) {
     appendCss();
 
     const gamesInProgressObs = mainCtrl.getGameCtrl().getMyGamesInProgress();
