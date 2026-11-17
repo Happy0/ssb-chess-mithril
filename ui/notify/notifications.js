@@ -13,7 +13,11 @@ module.exports = (mainCtrl) => {
   }
 
   function mapNotification(gameMsg, cb) {
-    if (!userLocationUtils.chessAppIsVisible()) {
+    const appVisible = userLocationUtils.chessAppIsVisible();
+
+    if (appVisible) {
+      cb(null, null);
+    } else {
       const gameId = gameMsg.value.content.type === 'chess_invite' ? gameMsg.key : gameMsg.value.content.root;
 
       if (!gameId) {
