@@ -108,44 +108,42 @@ module.exports = (gameObservable) => {
     return document.activeElement.className.indexOf('ssb-embedded-chat-input-box') > -1;
   }
 
-  function handleArrowKeys() {
+
+  function handleKeyDownEvent(evt) {
     const left = 37;
     const up = 38;
     const right = 39;
     const down = 40;
 
-    document.onkeydown = function (evt) {
-      if (!UserLocationUtils.chessAppIsVisible() || hasChatInputBoxFocused()) {
-        return;
+    if (!UserLocationUtils.chessAppIsVisible() || hasChatInputBoxFocused()) {
+      return;
+    }
+
+    if (evt.keyCode === left && (moveNumberSelected !== 0)) {
+      if (moveNumberSelected === 'live') {
+        moveNumberSelected = latestMove;
       }
 
-      evt = evt || window.event;
-      if (evt.keyCode === left && (moveNumberSelected !== 0)) {
-        if (moveNumberSelected === 'live') {
-          moveNumberSelected = latestMove;
-        }
+      moveNumberSelected -= 1;
+    } else if (evt.keyCode === right && moveNumberSelected !== 'live') {
+      moveNumberSelected += 1;
 
-        moveNumberSelected -= 1;
-      } else if (evt.keyCode === right && moveNumberSelected !== 'live') {
-        moveNumberSelected += 1;
-
-        if (moveNumberSelected === latestMove) {
-          moveNumberSelected = 'live';
-        }
-      } else if (evt.keyCode === up) {
-        moveNumberSelected = 0;
-      } else if (evt.keyCode === down) {
+      if (moveNumberSelected === latestMove) {
         moveNumberSelected = 'live';
       }
+    } else if (evt.keyCode === up) {
+      moveNumberSelected = 0;
+    } else if (evt.keyCode === down) {
+      moveNumberSelected = 'live';
+    }
 
-      const allArrowKeys = [left, up, right, down];
+    const allArrowKeys = [left, up, right, down];
 
-      if (allArrowKeys.indexOf(evt.keyCode) !== -1) {
-        moveSelectedObservable.set(moveNumberSelected);
-      }
-
+    if (allArrowKeys.indexOf(evt.keyCode) !== -1) {
+      moveSelectedObservable.set(moveNumberSelected);
       m.redraw();
-    };
+    }
+
   }
 
   /**
@@ -199,12 +197,13 @@ module.exports = (gameObservable) => {
       updateModelOnGameUpdates();
     },
     oncreate: () => {
-      handleArrowKeys();
+      document.addEventListener('keydown', handleKeyDownEvent)
       scrollToBottomOnGameUpdates();
     },
     onremove: () => {
       watchesToClear.forEach(w => w());
       watchesToClear = [];
+      document.removeEventListener('keydown', handleKeyDownEvent)
     },
     getMoveSelectedObservable,
     goToLiveMode,
