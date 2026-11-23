@@ -90,7 +90,7 @@ module.exports = (
 
           if (chessground) {
             const { pieces } = chessground.state;
-            materialDiff = getMaterialDiff(pieces);
+            materialDiff = getMaterialDiff(Object.fromEntries(pieces));
             m.redraw();
           }
         },
