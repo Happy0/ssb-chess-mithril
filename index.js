@@ -59,7 +59,7 @@ function mountComponent (attachToElement, mainCtrl, dataAccess, opts = {}) {
 
     const gamesInProgressObs = mainCtrl.getGameCtrl().getMyGamesInProgress();
     const gamesMyMoveObs = mainCtrl.getGameCtrl().getGamesWhereMyMove();
-    const observableGamesObs = mainCtrl.getGameCtrl().getFriendsObservableGames();
+    const observableGamesObs = mainCtrl.getGameCtrl().getFriendsObservableGames(20);
     const userRecentActivity = mainCtrl.getRecentActivityCtrl().getRecentActivityForUserGames();
     const pendingChallengesReceived = mainCtrl.getInviteCtrl().pendingChallengesReceived()
     const unseenNotifications = mainCtrl.getRecentActivityCtrl().unseenNotifications()
