@@ -153,11 +153,11 @@ function mountComponent (attachToElement, mainCtrl, dataAccess, opts = {}) {
   };
 };
 
-module.exports = async (dataAccess) => {
+module.exports = async (chessIndex, dataAccess) => {
   const whoAmIAsync = util.promisify(dataAccess.whoAmI.bind(dataAccess))
   const ident = await whoAmIAsync();
 
-  const mainCtrl = MainCtrl(dataAccess, ident.id);
+  const mainCtrl = MainCtrl(chessIndex, dataAccess, ident.id);
 
   return {
     mount: (attachToElement, opts) => mountComponent(attachToElement, mainCtrl, dataAccess, opts),
